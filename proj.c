@@ -8,48 +8,56 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+char* t = NULL;
+char* p = NULL;
+ssize_t n; /* no characters in text t */
+ssize_t m; /* no characters in pattern p */
+
+void NaivePatternSearch(){
+    int i, j;
+    for (i=0; i<=n-m; i++){
+        for (j=0; j<m; j++)
+            if (t[i+j] != p[j])
+                break;
+        if (j==m)
+            printf("%d ",i);
+    }
+    printf("\n");
+}
+
 int main() {
     char cmd;
-    char* t = NULL;
-    char* p = NULL;
-    size_t len_t = 0;
+    size_t len_t = 0; /* lenght of memory allocated for t */
     size_t len_p = 0;
-    ssize_t read_t;
-    ssize_t read_p;
-
     while(1){
         cmd = getchar();
         getchar();
         switch (cmd){
-            case 'T':
-                read_t = getline(&t, &len_t, stdin);
-                t[read_t-1] = '\0';
-                printf("T string: %s\n", t);
+            case 'T': /* Get Text Sequence */
+                n = getline(&t, &len_t, stdin);
+                t[--n] = '\0';
                 break;
-            case 'N':
-                read_p = getline(&p, &len_p, stdin);
-                p[read_p-1] = '\0';
-                printf("P string: %s\n", p);
+            case 'N': /* Naive Search */
+                m = getline(&p, &len_p, stdin);
+                p[--m] = '\0';
+                NaivePatternSearch();
                 break;
-            case 'K':
-                read_p = getline(&p, &len_p, stdin);
-                p[read_p-1] = '\0';
-                printf("P string: %s\n", p);
+            case 'K': /* Knuth-Morris-Pratt */
+                m = getline(&p, &len_p, stdin);
+                p[--m] = '\0';
                 break;
-            case 'B':
-                read_p = getline(&p, &len_p, stdin);
-                p[read_p-1] = '\0';
-                printf("P string: %s\n", p);
+            case 'B': /* Boyer-Moore */
+                m = getline(&p, &len_p, stdin);
+                p[--m] = '\0';
                 break;
-            case 'X':
+            case 'X': /* Exit */
                 free(t);
                 free(p);
-                printf("X\n");
                 return EXIT_SUCCESS;
             default:
                 printf("ERROR: Invalid command.\n");
                 return EXIT_FAILURE;     
         }
     }
-    return 0;
+    return EXIT_FAILURE;
 }

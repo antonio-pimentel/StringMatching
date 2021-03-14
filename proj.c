@@ -10,18 +10,24 @@
 
 char* t = NULL;
 char* p = NULL;
-ssize_t n; /* no characters in text t */
-ssize_t m; /* no characters in pattern p */
+ssize_t n; /* num characters in text t */
+ssize_t m; /* num characters in pattern p */
 
 void NaivePatternSearch(){
     int i, j;
     for (i=0; i<=n-m; i++){
-        for (j=0; j<m; j++)
-            if (t[i+j] != p[j])
-                break;
+        for (j=0; t[i+j] == p[j] && j<m; j++){}
         if (j==m)
             printf("%d ",i);
     }
+    printf("\n");
+}
+
+void KnuthMorrisPratt(){
+
+    
+
+
     printf("\n");
 }
 
@@ -45,6 +51,7 @@ int main() {
             case 'K': /* Knuth-Morris-Pratt */
                 m = getline(&p, &len_p, stdin);
                 p[--m] = '\0';
+                KnuthMorrisPratt();
                 break;
             case 'B': /* Boyer-Moore */
                 m = getline(&p, &len_p, stdin);

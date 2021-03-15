@@ -10,8 +10,8 @@
 
 char* t = NULL;
 char* p = NULL;
-ssize_t n; /* num characters in text t */
-ssize_t m; /* num characters in pattern p */
+ssize_t n = 0; /* num characters in text t */
+ssize_t m = 0; /* num characters in pattern p */
 
 void NaivePatternSearch(){
     int i, j;
@@ -24,11 +24,29 @@ void NaivePatternSearch(){
 }
 
 void KnuthMorrisPratt(){
-
-    
-
-
+    int i, k;
+    int* prefixTable = malloc(m*sizeof(int));
+    prefixTable[0] = 0;
+    for (i=0; i<m-1; i++)
+        if (p[i+1] == p[prefixTable[i]])
+            prefixTable[i+1] = prefixTable[i]+1;
+        else
+            prefixTable[i+1] = 0;
+    k=0;
+    for (i=0; i<n; i++)
+        if (p[k] == t[i])
+            if (k==m-1){
+                printf("%d ", i-k);
+                k = prefixTable[k];
+            }
+            else
+                k++;
+        else if (k>0){
+            k = prefixTable[k-1];
+            i--;
+        }
     printf("\n");
+    free(prefixTable);
 }
 
 int main() {

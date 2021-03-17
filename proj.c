@@ -24,7 +24,7 @@ void NaivePatternSearch(){
 }
 
 void KnuthMorrisPratt(){
-    int i, k;
+    int i, k, count;
     int* prefixTable = malloc(m*sizeof(int));
     prefixTable[0] = 0;
     for (i=0; i<m-1; i++)
@@ -33,19 +33,46 @@ void KnuthMorrisPratt(){
         else
             prefixTable[i+1] = 0;
     k=0;
-    for (i=0; i<n; i++)
+    count=0;
+    for (i=0; i<n; i++) {
+        while(k>0 && p[k] != t[i]){
+            k = prefixTable[k-1];
+            count++;
+        }
+        count++;
+        if (p[k] == t[i])
+            k++;
+        if (k == m) {
+            printf("%d ",i-k+1);
+            if (i<n-1){
+                k= prefixTable[k-1];
+                count++;
+            }
+        }
+    }
+    /*
+    k=0;
+    count=0;
+    for (i=0; i<n; i++){
+        count++;
         if (p[k] == t[i])
             if (k==m-1){
                 printf("%d ", i-k);
-                k = prefixTable[k];
+                if (i<n-1){
+                    k = prefixTable[k];
+                    count++;
+                }
             }
             else
                 k++;
         else if (k>0){
             k = prefixTable[k-1];
+            count++;
             i--;
         }
-    printf("\n");
+    }
+    */
+    printf("\n%d\n", count);
     free(prefixTable);
 }
 

@@ -76,6 +76,36 @@ void KnuthMorrisPratt(){
     free(prefixTable);
 }
 
+int alphabetToIndex(char c){
+    switch (c){
+        case 'A': return 0;
+        case 'C': return 1;
+        case 'G': return 2;
+        case 'T': return 3;
+        default:
+            printf("ERROR: The current Boyer-Moore implementation \
+            only supports patterns with the alphabet: A, C, G, T.\n");
+            return -1;
+    }
+}
+
+void BoyerMoore(){
+    int i;
+    int* badCharTable = malloc(4*sizeof(int));/*A,C,G,T*/
+    for (i=0; i<4; i++)
+        badCharTable[i] = -1;
+    for (i=0; i<m; i++)
+        badCharTable[alphabetToIndex(p[i])] = i;
+
+    
+
+
+    /* for (i=0; i<4; i++)
+        printf("%d ", badCharTable[i]); */
+    printf("\n");
+    free(badCharTable);
+}
+
 int main() {
     char cmd;
     size_t len_t = 0; /* lenght of memory allocated for t */
@@ -101,6 +131,7 @@ int main() {
             case 'B': /* Boyer-Moore */
                 m = getline(&p, &len_p, stdin);
                 p[--m] = '\0';
+                BoyerMoore();
                 break;
             case 'X': /* Exit */
                 free(t);

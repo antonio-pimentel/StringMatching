@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+
 char* t = NULL;
 char* p = NULL;
 ssize_t n = 0; /* num characters in text t */
@@ -90,18 +92,20 @@ int alphabetToIndex(char c){
 }
 
 void BoyerMoore(){
-    int i;
+    int i,j;
     int* badCharTable = malloc(4*sizeof(int));/*A,C,G,T*/
     for (i=0; i<4; i++)
         badCharTable[i] = -1;
     for (i=0; i<m; i++)
         badCharTable[alphabetToIndex(p[i])] = i;
-
-    
-
-
-    /* for (i=0; i<4; i++)
-        printf("%d ", badCharTable[i]); */
+    i = 0;
+    while(i <= n-m){
+        for (j = m-1; t[i+j] == p[j] && j>=0; j--){}
+        if (j==-1) /*match found*/
+            printf("%d ", i++);
+        else /*char doesn't match*/
+            i += MAX(j-badCharTable[alphabetToIndex(t[i+j])], 1);
+    }
     printf("\n");
     free(badCharTable);
 }

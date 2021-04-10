@@ -1,5 +1,5 @@
 /* 
-    Advanced Algorithms, Mar 2021
+    Advanced Algorithms, April 2021
     Project 1 - String Matching
     Antonio Pimentel, 86385
 */
@@ -18,7 +18,7 @@ ssize_t m = 0; /* num characters in pattern p */
 void NaivePatternSearch(){
     int i, j;
     for (i=0; i<=n-m; i++){
-        for (j=0; t[i+j] == p[j] && j<m; j++){}
+        for (j=0; t[i+j] == p[j] && j<m; j++);
         if (j==m)
             printf("%d ",i);
     }
@@ -74,7 +74,7 @@ void KnuthMorrisPratt(){
         }
     }
     */
-    printf("\n%d\n", count);
+    printf("\n%d \n", count);
     free(prefixTable);
 }
 
@@ -91,23 +91,78 @@ int alphabetToIndex(char c){
     }
 }
 
+int* createNTable() {
+    int i, l, r;
+    int* N = malloc(sizeof(int)*m);
+    int* Z = malloc(sizeof(int)*m);
+    char* reverse = malloc(sizeof(char)*m);
+    /* Reverse p */
+    for (i=0; i<m; i++)
+        reverse[i] = p[m-i-1];
+    /* Z algorithm */
+    l = r = 0;
+    for (i = 1; i < m; i++) 
+        if (i >= r) {
+            l = r = i;
+            while (r < m && reverse[r-l] == reverse[r]) r++;
+            Z[i] = r-l;
+        }
+        else
+            if (Z[i-l] < r-i)
+                Z[i] = Z[i-l];
+            else {
+                l = i;
+                while (r < m && reverse[r-l] == reverse[r]) r++;
+                Z[i] = r-l;
+            }
+    /* Reverse Z to get N(P) */
+    for (i=0; i<m; i++)
+        N[i] = Z[m-i-1];
+    free(Z);
+    free(reverse);
+    return N;
+}
+
 void BoyerMoore(){
-    int i,j;
+    int i,j, count;
+    int* L = malloc(m*sizeof(int));
+    int* l = malloc(m*sizeof(int));
+    /* Bad Character */
     int* badCharTable = malloc(4*sizeof(int));/*A,C,G,T*/
     for (i=0; i<4; i++)
         badCharTable[i] = -1;
     for (i=0; i<m; i++)
         badCharTable[alphabetToIndex(p[i])] = i;
-    i = 0;
-    while(i <= n-m){
-        for (j = m-1; t[i+j] == p[j] && j>=0; j--){}
-        if (j==-1) /*match found*/
-            printf("%d ", i++);
-        else /*char doesn't match*/
-            i += MAX(j-badCharTable[alphabetToIndex(t[i+j])], 1);
+    #define BADCHAR_INC MAX(j-badCharTable[alphabetToIndex(t[i+j])], 1)
+    /* Strong Good Suffix */
+    int* N = createNTable(p,m);
+    for (i=1; i<m; i++)
+        L[i] = l[i] = 0;
+    int largest_j = 0;
+    for (j=1; j<m-1; j++){
+        L[m-N[j]] = j+1; 
+        if (N[j] == j+1)
+            largest_j = j+1;
+        l[m-1-j] = largest_j;
     }
-    printf("\n");
+    #define GOODSUFFIX_INC j == m-1 ? 1                         \
+                                    : L[j+1] > 0 ? m - L[j+1]   \
+                                                 : m - l[j+1]
+    /* Search */
+    count = i = 0;
+    while(i <= n-m){
+        for (j = m-1; j>=0 && ++count && t[i+j] == p[j]; j--);
+        if (j<0){ /*match found*/
+            printf("%d ", i);
+            i += m - l[1];
+        }
+        else i += MAX(BADCHAR_INC, GOODSUFFIX_INC);
+    }
+    printf("\n%d \n", count);
     free(badCharTable);
+    free(N);
+    free(L);
+    free(l);
 }
 
 int main() {

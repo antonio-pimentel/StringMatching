@@ -133,14 +133,15 @@ void BoyerMoore(){
         badCharTable[i] = -1;
     for (i=0; i<m; i++)
         badCharTable[alphabetToIndex(p[i])] = i;
-    #define BADCHAR_INC MAX(j-badCharTable[alphabetToIndex(t[i+j])], 1)
+    #define BADCHAR_INC MAX(j-badCharTable[alphabetToIndex(t[i+j])],1)
     /* Strong Good Suffix */
     int* N = createNTable(p,m);
-    for (i=1; i<m; i++)
+    for (i=0; i<m; i++)
         L[i] = l[i] = 0;
     int largest_j = 0;
-    for (j=1; j<m-1; j++){
-        L[m-1-N[j]] = j+1;
+    for (j=0; j<m-1; j++){
+        if(m-N[j] < m)
+            L[m-N[j]] = j+1;
         if (N[j] == j+1)
             largest_j = j+1;
         l[m-1-j] = largest_j;
@@ -155,10 +156,8 @@ void BoyerMoore(){
         if (j<0){ /*match found*/
             printf("%d ", i);
             i += m - l[1];
-            /* i += 1; */
         }
         else i += MAX(BADCHAR_INC, GOODSUFFIX_INC);
-        /* else i += MAX(BADCHAR_INC, 1); */
     }
     printf("\n%d \n", count);
     free(badCharTable);
